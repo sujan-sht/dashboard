@@ -4,11 +4,15 @@ import Input from "@/src/app/(admin)/components/form/input/InputField";
 import Label from "@/src/app/(admin)/components/form/Label";
 // import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import { registerUser, UserState } from "@/src/app/(auth)/lib/actions";
+import { useState, useActionState } from "react";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const initialState: UserState = { message: null, errors: {} };
+
+  const [state, formAction] = useActionState(registerUser, initialState);
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -83,7 +87,7 @@ export default function SignUpForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form action={formAction}>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {/* <!-- First Name --> */}
@@ -97,6 +101,12 @@ export default function SignUpForm() {
                       name="fname"
                       placeholder="Enter your first name"
                     />
+                    {state.errors?.fname &&
+                    state.errors.fname.map((error: string) => (
+                      <p className="mt-2 text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
                   </div>
                   {/* <!-- Last Name --> */}
                   <div className="sm:col-span-1">
@@ -129,7 +139,7 @@ export default function SignUpForm() {
                     Password<span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
-                    <Input
+                    <Input name="password"
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
                     />
@@ -148,8 +158,8 @@ export default function SignUpForm() {
                   </div>
                 </div>
                 {/* <!-- Checkbox --> */}
-                <div className="flex items-center gap-3">
-                  <Checkbox
+                {/* <div className="flex items-center gap-3">
+                  <Checkbox name="terms"
                     className="w-5 h-5"
                     checked={isChecked}
                     onChange={setIsChecked}
@@ -164,10 +174,10 @@ export default function SignUpForm() {
                       Privacy Policy
                     </span>
                   </p>
-                </div>
+                </div> */}
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
+                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600" type="submit">
                     Sign Up
                   </button>
                 </div>
